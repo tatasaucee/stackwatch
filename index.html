@@ -1,1 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STACKWATCH — Huawei / China / West Tech Signal Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0E12;
+    --panel:#10161C;
+    --panel-2:#0D1218;
+    --border:#1E2A33;
+    --text:#E7EDF2;
+    --muted:#7C8B96;
+    --dim:#4B5A64;
+    --amber:#F5A623;
+    --amber-dim:#5C4520;
+    --red:#E2483D;
+    --red-dim:#4A2320;
+    --blue:#4C8BF5;
+    --blue-dim:#1E2E4A;
+    --green:#3ECF8E;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);}
+  body{
+    font-family:'IBM Plex Sans',sans-serif;
+    min-height:100vh;
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(76,139,245,0.06), transparent 40%),
+      radial-gradient(circle at 85% 0%, rgba(226,72,61,0.06), transparent 40%);
+  }
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  a{color:inherit;}
 
+  header{
+    border-bottom:1px solid var(--border);
+    padding:18px 28px 14px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:12px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+  }
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand .dot{
+    width:9px;height:9px;border-radius:50%;
+    background:var(--green);
+    box-shadow:0 0 0 0 rgba(62,207,142,0.6);
+    animation:pulse 2s infinite;
+  }
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(62,207,142,0.5);}
+    70%{box-shadow:0 0 0 8px rgba(62,207,142,0);}
+    100%{box-shadow:0 0 0 0 rgba(62,207,142,0);}
+  }
+  .brand h1{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:20px;
+    font-weight:700;
+    letter-spacing:0.5px;
+    margin:0;
+  }
+  .brand h1 span{color:var(--amber);}
+  .brand .sub{font-size:11px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;}
+  .status-cluster{display:flex;align-items:center;gap:22px;font-size:12px;color:var(--muted);}
+  .status-cluster .stat{display:flex;flex-direction:column;align-items:flex-end;gap:2px;}
+  .status-cluster .stat b{color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  #refreshBtn{
+    background:var(--panel);
+    border:1px solid var(--border);
+    color:var(--text);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    padding:8px 14px;
+    border-radius:4px;
+    cursor:pointer;
+    letter-spacing:0.5px;
+    transition:border-color .15s ease;
+  }
+  #refreshBtn:hover{border-color:var(--amber);}
+  #refreshBtn:focus-visible{outline:2px solid var(--amber);outline-offset:2px;}
+
+  .ticker-wrap{
+    border-bottom:1px solid var(--border);
+    background:var(--panel-2);
+    overflow:hidden;
+    white-space:nowrap;
+    position:relative;
+    height:34px;
+    display:flex;
+    align-items:center;
+  }
+  .ticker-label{
+    flex:0 0 auto;
+    background:var(--amber);
+    color:#141414;
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:600;
+    font-size:11px;
+    letter-spacing:1px;
+    padding:0 12px;
+    height:100%;
+    display:flex;
+    align-items:center;
+    z-index:2;
+  }
+  .ticker-track{
+    display:inline-flex;
+    animation:scroll-left 55s linear infinite;
+    padding-left:100%;
+  }
+  .ticker-track:hover{animation-play-state:paused;}
+  @keyframes scroll-left{
+    from{transform:translateX(0);}
+    to{transform:translateX(-100%);}
+  }
+  .ticker-item{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--muted);
+    padding:0 26px;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+  }
+  .ticker-item .tag{font-weight:600;}
+  .ticker-item a{text-decoration:none;color:var(--text);}
+  .ticker-item a:hover{color:var(--amber);}
+
+  .filter-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:14px 28px;
+    flex-wrap:wrap;
+    border-bottom:1px solid var(--border);
+  }
+  .filter-row .flabel{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-right:6px;}
+  .chip{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    padding:6px 12px;
+    border-radius:20px;
+    border:1px solid var(--border);
+    background:transparent;
+    color:var(--muted);
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .chip:hover{border-color:var(--muted);color:var(--text);}
+  .chip.active{background:var(--text);color:var(--bg);border-color:var(--text);}
+  input#keywordFilter{
+    margin-left:auto;
+    background:var(--panel);
+    border:1px solid var(--border);
+    color:var(--text);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    padding:7px 12px;
+    border-radius:4px;
+    width:200px;
+  }
+  input#keywordFilter:focus-visible{outline:2px solid var(--amber);outline-offset:1px;}
+
+  .board{
+    display:grid;
+    grid-template-columns:1fr 1.15fr 1fr;
+    gap:0;
+    min-height:60vh;
+  }
+  .column{
+    border-right:1px solid var(--border);
+    display:flex;
+    flex-direction:column;
+    min-width:0;
+  }
+  .column:last-child{border-right:none;}
+  .column.huawei{background:linear-gradient(180deg, rgba(245,166,35,0.04), transparent 20%);}
+  .col-head{
+    padding:16px 20px 12px;
+    border-bottom:1px solid var(--border);
+    position:sticky;
+    top:0;
+    background:var(--bg);
+    z-index:3;
+  }
+  .col-head .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+  }
+  .col-head h2{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:18px;
+    margin:4px 0 2px;
+  }
+  .col-head .desc{font-size:12px;color:var(--muted);}
+  .column.west .eyebrow, .column.west h2{color:var(--blue);}
+  .column.china .eyebrow, .column.china h2{color:var(--red);}
+  .column.huawei .eyebrow, .column.huawei h2{color:var(--amber);}
+
+  .feed{
+    padding:10px 16px 40px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    overflow-y:auto;
+    max-height:72vh;
+  }
+  .feed::-webkit-scrollbar{width:6px;}
+  .feed::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+  .card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:12px 14px;
+    text-decoration:none;
+    color:var(--text);
+    display:block;
+    transition:border-color .15s ease, transform .1s ease;
+  }
+  .card:hover{border-color:var(--muted);transform:translateY(-1px);}
+  .card:focus-visible{outline:2px solid var(--amber);outline-offset:2px;}
+  .card .meta{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    color:var(--dim);
+    margin-bottom:6px;
+    letter-spacing:0.3px;
+    text-transform:uppercase;
+  }
+  .card .headline{font-size:13.5px;line-height:1.4;font-weight:500;margin:0;}
+  .card .snippet{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+
+  .empty, .loading, .err{
+    color:var(--dim);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    padding:30px 4px;
+    text-align:center;
+  }
+  .err{color:var(--red);}
+
+  footer{
+    border-top:1px solid var(--border);
+    padding:16px 28px 26px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--dim);
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  footer a{color:var(--muted);text-decoration:underline;}
+
+  @media (max-width:900px){
+    .board{grid-template-columns:1fr;}
+    .column{border-right:none;border-bottom:1px solid var(--border);}
+    .feed{max-height:none;}
+    input#keywordFilter{width:100%;margin-left:0;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .ticker-track{animation:none;}
+    .brand .dot{animation:none;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <span class="dot"></span>
+    <div>
+      <h1>STACK<span>WATCH</span></h1>
+      <div class="sub">Huawei · China Tech · Western Stack — Live Signal Board</div>
+    </div>
+  </div>
+  <div class="status-cluster">
+    <div class="stat"><span>Local time</span><b id="clock" class="mono">--:--:--</b></div>
+    <div class="stat"><span>Next refresh</span><b id="countdown" class="mono">--</b></div>
+    <div class="stat"><span>Source</span><b id="dataSource" class="mono">checking…</b></div>
+    <button id="refreshBtn" class="mono">⟳ REFRESH NOW</button>
+  </div>
+</header>
+
+<div class="ticker-wrap">
+  <div class="ticker-label">LIVE FEED</div>
+  <div class="ticker-track" id="tickerTrack">
+    <span class="ticker-item">Loading latest signals…</span>
+  </div>
+</div>
+
+<div class="filter-row">
+  <span class="flabel">Filter</span>
+  <button class="chip active" data-filter="all">All</button>
+  <button class="chip" data-filter="chip">Chips / Semiconductors</button>
+  <button class="chip" data-filter="export">Export Controls</button>
+  <button class="chip" data-filter="ai">AI</button>
+  <button class="chip" data-filter="5g">5G / Telecom</button>
+  <input id="keywordFilter" class="mono" type="text" placeholder="search keyword…">
+</div>
+
+<div class="board">
+  <section class="column west">
+    <div class="col-head">
+      <div class="eyebrow">Western Stack</div>
+      <h2>US / EU / Allies</h2>
+      <div class="desc">Chip policy, export controls, allied tech response</div>
+    </div>
+    <div class="feed" id="feed-west"><div class="loading">Tuning in…</div></div>
+  </section>
+
+  <section class="column huawei">
+    <div class="col-head">
+      <div class="eyebrow">Flashpoint</div>
+      <h2>Huawei Signal</h2>
+      <div class="desc">Company news, HarmonyOS, Kirin, sanctions, market moves</div>
+    </div>
+    <div class="feed" id="feed-huawei"><div class="loading">Tuning in…</div></div>
+  </section>
+
+  <section class="column china">
+    <div class="col-head">
+      <div class="eyebrow">China Stack</div>
+      <h2>China Tech &amp; Policy</h2>
+      <div class="desc">Domestic semiconductors, state policy, self-sufficiency push</div>
+    </div>
+    <div class="feed" id="feed-china"><div class="loading">Tuning in…</div></div>
+  </section>
+</div>
+
+<footer>
+  <span>Sources: Google News RSS (query-driven), refreshed via rss2json.com proxy. Auto-refresh every 5 min.</span>
+  <span>Edit <span class="mono">CATEGORIES</span> in the page source to change queries or add columns.</span>
+</footer>
+
+<script>
+/* ============================================================
+   CONFIG — edit these to change what the dashboard tracks
+   ============================================================ */
+
+// Optional: get a free key at https://rss2json.com/ for higher rate limits
+// and paste it below. Works without one at low volumes.
+const RSS2JSON_KEY = ""; // e.g. "abcd1234..."
+
+const REFRESH_MS = 5 * 60 * 1000; // auto-refresh every 5 minutes
+const ITEMS_PER_COLUMN = 18;
+
+// Each category = one or more Google News RSS search queries, merged & de-duped.
+const CATEGORIES = {
+  west: {
+    label: "WEST",
+    color: "var(--blue)",
+    queries: [
+      "US chip export controls China",
+      "semiconductor sanctions China",
+      "Nvidia China export restrictions",
+      "CHIPS Act",
+    ],
+  },
+  huawei: {
+    label: "HUAWEI",
+    color: "var(--amber)",
+    queries: [
+      "Huawei",
+      "Huawei Kirin chip",
+      "HarmonyOS",
+      "Huawei sanctions",
+    ],
+  },
+  china: {
+    label: "CHINA",
+    color: "var(--red)",
+    queries: [
+      "China semiconductor self-sufficiency",
+      "SMIC chip",
+      "China tech policy",
+      "China AI chip",
+    ],
+  },
+};
+
+/* ============================================================
+   ENGINE
+   ============================================================ */
+
+function googleNewsRssUrl(query) {
+  const q = encodeURIComponent(query);
+  return `https://news.google.com/rss/search?q=${q}&hl=en-US&gl=US&ceid=US:en`;
+}
+
+async function fetchFeed(rssUrl) {
+  const proxied = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}${RSS2JSON_KEY ? "&api_key=" + RSS2JSON_KEY : ""}`;
+  const res = await fetch(proxied);
+  if (!res.ok) throw new Error("Feed request failed: " + res.status);
+  const data = await res.json();
+  if (data.status !== "ok") throw new Error("Feed error: " + (data.message || "unknown"));
+  return data.items || [];
+}
+
+function timeAgo(dateStr) {
+  const d = new Date(dateStr);
+  const diffMs = Date.now() - d.getTime();
+  const mins = Math.round(diffMs / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return mins + "m ago";
+  const hrs = Math.round(mins / 60);
+  if (hrs < 24) return hrs + "h ago";
+  const days = Math.round(hrs / 24);
+  return days + "d ago";
+}
+
+function stripHtml(html) {
+  const tmp = document.createElement("div");
+  tmp.innerHTML = html || "";
+  return (tmp.textContent || tmp.innerText || "").trim();
+}
+
+function sourceFromTitle(title) {
+  const parts = title.split(" - ");
+  if (parts.length > 1) {
+    return { headline: parts.slice(0, -1).join(" - "), source: parts[parts.length - 1] };
+  }
+  return { headline: title, source: "" };
+}
+
+let ALL_ITEMS = { west: [], huawei: [], china: [] };
+let currentFilter = "all";
+let currentKeyword = "";
+
+async function loadCategory(key) {
+  const cat = CATEGORIES[key];
+  const feedEl = document.getElementById("feed-" + key);
+  try {
+    const results = await Promise.all(cat.queries.map(q => fetchFeed(googleNewsRssUrl(q)).catch(() => [])));
+    const merged = results.flat();
+    const seen = new Set();
+    const deduped = [];
+    for (const item of merged) {
+      if (!item.link || seen.has(item.link)) continue;
+      seen.add(item.link);
+      deduped.push(item);
+    }
+    deduped.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+    ALL_ITEMS[key] = deduped.slice(0, ITEMS_PER_COLUMN);
+    renderColumn(key);
+  } catch (e) {
+    feedEl.innerHTML = `<div class="err">Signal lost: ${e.message}. Will retry on next refresh.</div>`;
+  }
+}
+
+function matchesFilter(item) {
+  const text = (item.title + " " + (item.description || "")).toLowerCase();
+  const filterMap = {
+    chip: ["chip", "semiconductor", "fab", "wafer", "foundry"],
+    export: ["export control", "sanction", "entity list", "restriction", "ban"],
+    ai: ["ai ", "artificial intelligence", "gpu", "model"],
+    "5g": ["5g", "telecom", "network equipment"],
+  };
+  if (currentFilter !== "all") {
+    const kws = filterMap[currentFilter] || [];
+    if (!kws.some(k => text.includes(k))) return false;
+  }
+  if (currentKeyword && !text.includes(currentKeyword.toLowerCase())) return false;
+  return true;
+}
+
+function renderColumn(key) {
+  const feedEl = document.getElementById("feed-" + key);
+  const items = ALL_ITEMS[key].filter(matchesFilter);
+  if (!items.length) {
+    feedEl.innerHTML = `<div class="empty">No signals match current filter.</div>`;
+    return;
+  }
+  feedEl.innerHTML = items.map(item => {
+    const { headline, source } = sourceFromTitle(item.title || "");
+    const snippet = stripHtml(item.description).slice(0, 160);
+    return `
+      <a class="card" href="${item.link}" target="_blank" rel="noopener noreferrer">
+        <div class="meta">
+          <span>${source || "source"}</span>
+          <span>${timeAgo(item.pubDate)}</span>
+        </div>
+        <p class="headline">${headline}</p>
+        ${snippet ? `<div class="snippet">${snippet}</div>` : ""}
+      </a>
+    `;
+  }).join("");
+}
+
+function renderTicker() {
+  const track = document.getElementById("tickerTrack");
+  const all = [
+    ...ALL_ITEMS.west.slice(0, 6).map(i => ({ ...i, tag: "WEST", color: "var(--blue)" })),
+    ...ALL_ITEMS.huawei.slice(0, 6).map(i => ({ ...i, tag: "HUAWEI", color: "var(--amber)" })),
+    ...ALL_ITEMS.china.slice(0, 6).map(i => ({ ...i, tag: "CHINA", color: "var(--red)" })),
+  ].sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+
+  if (!all.length) {
+    track.innerHTML = `<span class="ticker-item">No live signals yet — check your connection or wait for next refresh.</span>`;
+    return;
+  }
+
+  track.innerHTML = all.map(item => {
+    const { headline } = sourceFromTitle(item.title || "");
+    return `<span class="ticker-item"><span class="tag" style="color:${item.color}">${item.tag}</span><a href="${item.link}" target="_blank" rel="noopener noreferrer">${headline}</a></span>`;
+  }).join("");
+}
+
+async function tryLoadStaticData() {
+  try {
+    const res = await fetch("./data/news.json", { cache: "no-store" });
+    if (!res.ok) return false;
+    const data = await res.json();
+    if (!data.categories) return false;
+    Object.keys(CATEGORIES).forEach(key => {
+      const items = data.categories[key] || [];
+      ALL_ITEMS[key] = items.map(item => ({
+        title: item.source ? `${item.title} - ${item.source}` : item.title,
+        link: item.link,
+        pubDate: item.pubDate,
+        description: item.description || "",
+      })).slice(0, ITEMS_PER_COLUMN);
+    });
+    document.getElementById("dataSource").textContent = `static · ${timeAgo(data.generated_at)}`;
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+async function refreshAll() {
+  document.getElementById("refreshBtn").textContent = "⟳ SYNCING…";
+  const usedStatic = await tryLoadStaticData();
+  if (!usedStatic) {
+    document.getElementById("dataSource").textContent = "live (fallback)";
+    await Promise.all(Object.keys(CATEGORIES).map(loadCategory));
+  }
+  Object.keys(CATEGORIES).forEach(renderColumn);
+  renderTicker();
+  document.getElementById("refreshBtn").textContent = "⟳ REFRESH NOW";
+  lastRefresh = Date.now();
+}
+
+function tickClock() {
+  document.getElementById("clock").textContent = new Date().toLocaleTimeString();
+}
+
+let lastRefresh = Date.now();
+function tickCountdown() {
+  const remaining = Math.max(0, REFRESH_MS - (Date.now() - lastRefresh));
+  const s = Math.floor(remaining / 1000);
+  const mm = String(Math.floor(s / 60)).padStart(2, "0");
+  const ss = String(s % 60).padStart(2, "0");
+  document.getElementById("countdown").textContent = `${mm}:${ss}`;
+  if (remaining <= 0) refreshAll();
+}
+
+document.querySelectorAll(".chip").forEach(chip => {
+  chip.addEventListener("click", () => {
+    document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
+    chip.classList.add("active");
+    currentFilter = chip.dataset.filter;
+    Object.keys(CATEGORIES).forEach(renderColumn);
+  });
+});
+
+document.getElementById("keywordFilter").addEventListener("input", (e) => {
+  currentKeyword = e.target.value;
+  Object.keys(CATEGORIES).forEach(renderColumn);
+});
+
+document.getElementById("refreshBtn").addEventListener("click", refreshAll);
+
+setInterval(tickClock, 1000);
+setInterval(tickCountdown, 1000);
+tickClock();
+
+refreshAll();
+</script>
+
+</body>
+</html>
