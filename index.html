@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>STACKWATCH — Huawei / China / West Tech Signal Board</title>
+<title>STACKWATCH — Personal Live News</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -16,12 +16,11 @@
     --muted:#7C8B96;
     --dim:#4B5A64;
     --amber:#F5A623;
-    --amber-dim:#5C4520;
     --red:#E2483D;
-    --red-dim:#4A2320;
     --blue:#4C8BF5;
-    --blue-dim:#1E2E4A;
     --green:#3ECF8E;
+    --teal:#2DD4BF;
+    --purple:#9B6BFF;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;background:var(--bg);color:var(--text);}
@@ -37,7 +36,7 @@
 
   header{
     border-bottom:1px solid var(--border);
-    padding:18px 28px 14px;
+    padding:16px 20px 12px;
     display:flex;
     align-items:center;
     justify-content:space-between;
@@ -45,7 +44,7 @@
     gap:12px;
     background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
   }
-  .brand{display:flex;align-items:center;gap:12px;}
+  .brand{display:flex;align-items:center;gap:10px;}
   .brand .dot{
     width:9px;height:9px;border-radius:50%;
     background:var(--green);
@@ -59,23 +58,22 @@
   }
   .brand h1{
     font-family:'Space Grotesk',sans-serif;
-    font-size:20px;
+    font-size:19px;
     font-weight:700;
     letter-spacing:0.5px;
     margin:0;
   }
   .brand h1 span{color:var(--amber);}
-  .brand .sub{font-size:11px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;}
-  .status-cluster{display:flex;align-items:center;gap:22px;font-size:12px;color:var(--muted);}
+  .status-cluster{display:flex;align-items:center;gap:16px;font-size:11px;color:var(--muted);flex-wrap:wrap;}
   .status-cluster .stat{display:flex;flex-direction:column;align-items:flex-end;gap:2px;}
-  .status-cluster .stat b{color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  .status-cluster .stat b{color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:12px;}
   #refreshBtn{
     background:var(--panel);
     border:1px solid var(--border);
     color:var(--text);
     font-family:'IBM Plex Mono',monospace;
     font-size:11px;
-    padding:8px 14px;
+    padding:8px 12px;
     border-radius:4px;
     cursor:pointer;
     letter-spacing:0.5px;
@@ -90,7 +88,7 @@
     overflow:hidden;
     white-space:nowrap;
     position:relative;
-    height:34px;
+    height:32px;
     display:flex;
     align-items:center;
   }
@@ -100,7 +98,7 @@
     color:#141414;
     font-family:'IBM Plex Mono',monospace;
     font-weight:600;
-    font-size:11px;
+    font-size:10px;
     letter-spacing:1px;
     padding:0 12px;
     height:100%;
@@ -120,106 +118,94 @@
   }
   .ticker-item{
     font-family:'IBM Plex Mono',monospace;
-    font-size:12px;
+    font-size:11px;
     color:var(--muted);
-    padding:0 26px;
+    padding:0 22px;
     display:inline-flex;
     align-items:center;
-    gap:8px;
+    gap:7px;
   }
   .ticker-item .tag{font-weight:600;}
   .ticker-item a{text-decoration:none;color:var(--text);}
   .ticker-item a:hover{color:var(--amber);}
 
-  .filter-row{
+  /* ===== TABS ===== */
+  .tab-bar{
     display:flex;
-    align-items:center;
-    gap:8px;
-    padding:14px 28px;
-    flex-wrap:wrap;
+    gap:6px;
+    padding:12px 16px;
+    overflow-x:auto;
     border-bottom:1px solid var(--border);
+    -webkit-overflow-scrolling:touch;
   }
-  .filter-row .flabel{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-right:6px;}
-  .chip{
+  .tab-bar::-webkit-scrollbar{display:none;}
+  .tab-btn{
+    flex:0 0 auto;
     font-family:'IBM Plex Mono',monospace;
-    font-size:11px;
-    padding:6px 12px;
+    font-size:12px;
+    padding:9px 14px;
     border-radius:20px;
     border:1px solid var(--border);
-    background:transparent;
+    background:var(--panel);
     color:var(--muted);
     cursor:pointer;
+    white-space:nowrap;
+    display:flex;
+    align-items:center;
+    gap:6px;
     transition:all .15s ease;
   }
-  .chip:hover{border-color:var(--muted);color:var(--text);}
-  .chip.active{background:var(--text);color:var(--bg);border-color:var(--text);}
+  .tab-btn:hover{color:var(--text);border-color:var(--muted);}
+  .tab-btn .swatch{width:7px;height:7px;border-radius:50%;flex:0 0 auto;}
+  .tab-btn.active{background:var(--text);color:var(--bg);border-color:var(--text);}
+  .tab-btn.active .swatch{background:var(--bg) !important;}
+
+  .search-row{
+    padding:0 16px 12px;
+    display:flex;
+  }
   input#keywordFilter{
-    margin-left:auto;
+    width:100%;
     background:var(--panel);
     border:1px solid var(--border);
     color:var(--text);
     font-family:'IBM Plex Mono',monospace;
     font-size:12px;
-    padding:7px 12px;
+    padding:9px 12px;
     border-radius:4px;
-    width:200px;
   }
   input#keywordFilter:focus-visible{outline:2px solid var(--amber);outline-offset:1px;}
 
-  .board{
-    display:grid;
-    grid-template-columns:1fr 1.15fr 1fr;
-    gap:0;
-    min-height:60vh;
+  /* ===== PANEL ===== */
+  .panel-head{
+    padding:6px 20px 14px;
   }
-  .column{
-    border-right:1px solid var(--border);
-    display:flex;
-    flex-direction:column;
-    min-width:0;
-  }
-  .column:last-child{border-right:none;}
-  .column.huawei{background:linear-gradient(180deg, rgba(245,166,35,0.04), transparent 20%);}
-  .col-head{
-    padding:16px 20px 12px;
-    border-bottom:1px solid var(--border);
-    position:sticky;
-    top:0;
-    background:var(--bg);
-    z-index:3;
-  }
-  .col-head .eyebrow{
+  .panel-head .eyebrow{
     font-family:'IBM Plex Mono',monospace;
     font-size:10px;
     letter-spacing:2px;
     text-transform:uppercase;
   }
-  .col-head h2{
+  .panel-head h2{
     font-family:'Space Grotesk',sans-serif;
-    font-size:18px;
+    font-size:20px;
     margin:4px 0 2px;
   }
-  .col-head .desc{font-size:12px;color:var(--muted);}
-  .column.west .eyebrow, .column.west h2{color:var(--blue);}
-  .column.china .eyebrow, .column.china h2{color:var(--red);}
-  .column.huawei .eyebrow, .column.huawei h2{color:var(--amber);}
+  .panel-head .desc{font-size:12px;color:var(--muted);}
 
   .feed{
-    padding:10px 16px 40px;
-    display:flex;
-    flex-direction:column;
+    padding:6px 16px 50px;
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(300px,1fr));
     gap:10px;
-    overflow-y:auto;
-    max-height:72vh;
+    align-content:start;
   }
-  .feed::-webkit-scrollbar{width:6px;}
-  .feed::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
 
   .card{
     background:var(--panel);
     border:1px solid var(--border);
     border-radius:6px;
-    padding:12px 14px;
+    padding:13px 15px;
     text-decoration:none;
     color:var(--text);
     display:block;
@@ -237,7 +223,9 @@
     margin-bottom:6px;
     letter-spacing:0.3px;
     text-transform:uppercase;
+    gap:8px;
   }
+  .card .meta .origin{font-weight:600;}
   .card .headline{font-size:13.5px;line-height:1.4;font-weight:500;margin:0;}
   .card .snippet{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
@@ -246,30 +234,24 @@
     color:var(--dim);
     font-family:'IBM Plex Mono',monospace;
     font-size:12px;
-    padding:30px 4px;
+    padding:40px 4px;
     text-align:center;
+    grid-column:1 / -1;
   }
   .err{color:var(--red);}
 
   footer{
     border-top:1px solid var(--border);
-    padding:16px 28px 26px;
+    padding:16px 20px 26px;
     font-family:'IBM Plex Mono',monospace;
-    font-size:11px;
+    font-size:10.5px;
     color:var(--dim);
     display:flex;
     justify-content:space-between;
     flex-wrap:wrap;
     gap:8px;
   }
-  footer a{color:var(--muted);text-decoration:underline;}
 
-  @media (max-width:900px){
-    .board{grid-template-columns:1fr;}
-    .column{border-right:none;border-bottom:1px solid var(--border);}
-    .feed{max-height:none;}
-    input#keywordFilter{width:100%;margin-left:0;}
-  }
   @media (prefers-reduced-motion: reduce){
     .ticker-track{animation:none;}
     .brand .dot{animation:none;}
@@ -283,113 +265,93 @@
     <span class="dot"></span>
     <div>
       <h1>STACK<span>WATCH</span></h1>
-      <div class="sub">Huawei · China Tech · Western Stack — Live Signal Board</div>
     </div>
   </div>
   <div class="status-cluster">
-    <div class="stat"><span>Local time</span><b id="clock" class="mono">--:--:--</b></div>
-    <div class="stat"><span>Next refresh</span><b id="countdown" class="mono">--</b></div>
+    <div class="stat"><span>Time</span><b id="clock" class="mono">--:--:--</b></div>
+    <div class="stat"><span>Next sync</span><b id="countdown" class="mono">--</b></div>
     <div class="stat"><span>Source</span><b id="dataSource" class="mono">checking…</b></div>
-    <button id="refreshBtn" class="mono">⟳ REFRESH NOW</button>
+    <button id="refreshBtn" class="mono">⟳ SYNC</button>
   </div>
 </header>
 
 <div class="ticker-wrap">
-  <div class="ticker-label">LIVE FEED</div>
+  <div class="ticker-label">LIVE</div>
   <div class="ticker-track" id="tickerTrack">
     <span class="ticker-item">Loading latest signals…</span>
   </div>
 </div>
 
-<div class="filter-row">
-  <span class="flabel">Filter</span>
-  <button class="chip active" data-filter="all">All</button>
-  <button class="chip" data-filter="chip">Chips / Semiconductors</button>
-  <button class="chip" data-filter="export">Export Controls</button>
-  <button class="chip" data-filter="ai">AI</button>
-  <button class="chip" data-filter="5g">5G / Telecom</button>
-  <input id="keywordFilter" class="mono" type="text" placeholder="search keyword…">
+<div class="tab-bar" id="tabBar"></div>
+
+<div class="search-row">
+  <input id="keywordFilter" class="mono" type="text" placeholder="search within this tab…">
 </div>
 
-<div class="board">
-  <section class="column west">
-    <div class="col-head">
-      <div class="eyebrow">Western Stack</div>
-      <h2>US / EU / Allies</h2>
-      <div class="desc">Chip policy, export controls, allied tech response</div>
-    </div>
-    <div class="feed" id="feed-west"><div class="loading">Tuning in…</div></div>
-  </section>
-
-  <section class="column huawei">
-    <div class="col-head">
-      <div class="eyebrow">Flashpoint</div>
-      <h2>Huawei Signal</h2>
-      <div class="desc">Company news, HarmonyOS, Kirin, sanctions, market moves</div>
-    </div>
-    <div class="feed" id="feed-huawei"><div class="loading">Tuning in…</div></div>
-  </section>
-
-  <section class="column china">
-    <div class="col-head">
-      <div class="eyebrow">China Stack</div>
-      <h2>China Tech &amp; Policy</h2>
-      <div class="desc">Domestic semiconductors, state policy, self-sufficiency push</div>
-    </div>
-    <div class="feed" id="feed-china"><div class="loading">Tuning in…</div></div>
-  </section>
+<div class="panel-head">
+  <div class="eyebrow mono" id="panelEyebrow"></div>
+  <h2 id="panelTitle"></h2>
+  <div class="desc" id="panelDesc"></div>
 </div>
+
+<div class="feed" id="feed"><div class="loading">Tuning in…</div></div>
 
 <footer>
-  <span>Sources: Google News RSS (query-driven), refreshed via rss2json.com proxy. Auto-refresh every 5 min.</span>
-  <span>Edit <span class="mono">CATEGORIES</span> in the page source to change queries or add columns.</span>
+  <span>Sources: static feed from GitHub Actions, with live Google News RSS fallback in-browser.</span>
+  <span>Edit <span class="mono">CATEGORIES</span> in the page source to change what each tab tracks.</span>
 </footer>
 
 <script>
 /* ============================================================
-   CONFIG — edit these to change what the dashboard tracks
+   CONFIG
    ============================================================ */
 
-// Optional: get a free key at https://rss2json.com/ for higher rate limits
-// and paste it below. Works without one at low volumes.
-const RSS2JSON_KEY = ""; // e.g. "abcd1234..."
+const RSS2JSON_KEY = ""; // optional, get one free at https://rss2json.com/
+const REFRESH_MS = 60 * 60 * 1000; // 1 hour, matches the server-side schedule
+const ITEMS_PER_TAB = 20;
+const HOT_ITEMS = 24; // how many items the Hot News tab pulls together
 
-const REFRESH_MS = 5 * 60 * 1000; // auto-refresh every 5 minutes
-const ITEMS_PER_COLUMN = 18;
-
-// Each category = one or more Google News RSS search queries, merged & de-duped.
+// Each tab (except "hot", which is derived automatically) = search queries.
 const CATEGORIES = {
-  west: {
-    label: "WEST",
-    color: "var(--blue)",
-    queries: [
-      "US chip export controls China",
-      "semiconductor sanctions China",
-      "Nvidia China export restrictions",
-      "CHIPS Act",
-    ],
-  },
-  huawei: {
-    label: "HUAWEI",
-    color: "var(--amber)",
-    queries: [
-      "Huawei",
-      "Huawei Kirin chip",
-      "HarmonyOS",
-      "Huawei sanctions",
-    ],
+  sg: {
+    label: "Singapore",
+    emoji: "🇸🇬",
+    color: "var(--teal)",
+    desc: "Local news, economy, everyday happenings",
+    queries: ["Singapore news"],
   },
   china: {
-    label: "CHINA",
+    label: "China",
+    emoji: "🇨🇳",
     color: "var(--red)",
-    queries: [
-      "China semiconductor self-sufficiency",
-      "SMIC chip",
-      "China tech policy",
-      "China AI chip",
-    ],
+    desc: "China tech, policy, Huawei, semiconductors",
+    queries: ["China technology policy", "Huawei", "China semiconductor"],
+  },
+  politics: {
+    label: "Politics",
+    emoji: "🏛️",
+    color: "var(--purple)",
+    desc: "Global politics and geopolitics",
+    queries: ["world politics", "geopolitics"],
+  },
+  usworld: {
+    label: "US & World",
+    emoji: "🇺🇸",
+    color: "var(--blue)",
+    desc: "US news and major world headlines",
+    queries: ["United States news", "world news today"],
+  },
+  companies: {
+    label: "Rising Companies",
+    emoji: "🚀",
+    color: "var(--green)",
+    desc: "Startups, funding, fast-growing companies worldwide",
+    queries: ["startup funding"],
   },
 };
+
+const TAB_ORDER = ["hot", "sg", "china", "politics", "usworld", "companies"];
+const HOT_TAB = { label: "Hot News", emoji: "🔥", color: "var(--amber)", desc: "Most recent across every tab, combined" };
 
 /* ============================================================
    ENGINE
@@ -410,6 +372,7 @@ async function fetchFeed(rssUrl) {
 }
 
 function timeAgo(dateStr) {
+  if (!dateStr) return "";
   const d = new Date(dateStr);
   const diffMs = Date.now() - d.getTime();
   const mins = Math.round(diffMs / 60000);
@@ -428,20 +391,21 @@ function stripHtml(html) {
 }
 
 function sourceFromTitle(title) {
-  const parts = title.split(" - ");
+  const parts = (title || "").split(" - ");
   if (parts.length > 1) {
     return { headline: parts.slice(0, -1).join(" - "), source: parts[parts.length - 1] };
   }
-  return { headline: title, source: "" };
+  return { headline: title || "", source: "" };
 }
 
-let ALL_ITEMS = { west: [], huawei: [], china: [] };
-let currentFilter = "all";
+let ALL_ITEMS = {}; // key -> array of {title, link, pubDate, description}
+Object.keys(CATEGORIES).forEach(k => ALL_ITEMS[k] = []);
+
+let activeTab = "hot";
 let currentKeyword = "";
 
-async function loadCategory(key) {
+async function loadCategoryLive(key) {
   const cat = CATEGORIES[key];
-  const feedEl = document.getElementById("feed-" + key);
   try {
     const results = await Promise.all(cat.queries.map(q => fetchFeed(googleNewsRssUrl(q)).catch(() => [])));
     const merged = results.flat();
@@ -450,46 +414,81 @@ async function loadCategory(key) {
     for (const item of merged) {
       if (!item.link || seen.has(item.link)) continue;
       seen.add(item.link);
-      deduped.push(item);
+      deduped.push({ title: item.title, link: item.link, pubDate: item.pubDate, description: item.description });
     }
     deduped.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-    ALL_ITEMS[key] = deduped.slice(0, ITEMS_PER_COLUMN);
-    renderColumn(key);
+    ALL_ITEMS[key] = deduped.slice(0, ITEMS_PER_TAB);
   } catch (e) {
-    feedEl.innerHTML = `<div class="err">Signal lost: ${e.message}. Will retry on next refresh.</div>`;
+    ALL_ITEMS[key] = [];
   }
 }
 
-function matchesFilter(item) {
+function getHotItems() {
+  const all = [];
+  Object.keys(CATEGORIES).forEach(key => {
+    ALL_ITEMS[key].forEach(item => all.push({ ...item, originKey: key }));
+  });
+  all.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+  // de-dupe across categories by link
+  const seen = new Set();
+  const out = [];
+  for (const item of all) {
+    if (!item.link || seen.has(item.link)) continue;
+    seen.add(item.link);
+    out.push(item);
+    if (out.length >= HOT_ITEMS) break;
+  }
+  return out;
+}
+
+function matchesKeyword(item) {
+  if (!currentKeyword) return true;
   const text = (item.title + " " + (item.description || "")).toLowerCase();
-  const filterMap = {
-    chip: ["chip", "semiconductor", "fab", "wafer", "foundry"],
-    export: ["export control", "sanction", "entity list", "restriction", "ban"],
-    ai: ["ai ", "artificial intelligence", "gpu", "model"],
-    "5g": ["5g", "telecom", "network equipment"],
-  };
-  if (currentFilter !== "all") {
-    const kws = filterMap[currentFilter] || [];
-    if (!kws.some(k => text.includes(k))) return false;
-  }
-  if (currentKeyword && !text.includes(currentKeyword.toLowerCase())) return false;
-  return true;
+  return text.includes(currentKeyword.toLowerCase());
 }
 
-function renderColumn(key) {
-  const feedEl = document.getElementById("feed-" + key);
-  const items = ALL_ITEMS[key].filter(matchesFilter);
+function renderTabBar() {
+  const bar = document.getElementById("tabBar");
+  bar.innerHTML = TAB_ORDER.map(key => {
+    const cat = key === "hot" ? HOT_TAB : CATEGORIES[key];
+    return `<button class="tab-btn ${key === activeTab ? "active" : ""}" data-tab="${key}">
+      <span class="swatch" style="background:${cat.color}"></span>${cat.emoji} ${cat.label}
+    </button>`;
+  }).join("");
+  bar.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      activeTab = btn.dataset.tab;
+      renderTabBar();
+      renderPanel();
+    });
+  });
+}
+
+function renderPanel() {
+  const cat = activeTab === "hot" ? HOT_TAB : CATEGORIES[activeTab];
+  document.getElementById("panelEyebrow").textContent = activeTab === "hot" ? "TRENDING" : activeTab.toUpperCase();
+  document.getElementById("panelEyebrow").style.color = cat.color;
+  document.getElementById("panelTitle").textContent = `${cat.emoji} ${cat.label}`;
+  document.getElementById("panelTitle").style.color = cat.color;
+  document.getElementById("panelDesc").textContent = cat.desc;
+
+  const feedEl = document.getElementById("feed");
+  const items = (activeTab === "hot" ? getHotItems() : ALL_ITEMS[activeTab]).filter(matchesKeyword);
+
   if (!items.length) {
-    feedEl.innerHTML = `<div class="empty">No signals match current filter.</div>`;
+    feedEl.innerHTML = `<div class="empty">No signals here right now. Try Sync, or clear the search.</div>`;
     return;
   }
+
   feedEl.innerHTML = items.map(item => {
-    const { headline, source } = sourceFromTitle(item.title || "");
+    const { headline, source } = sourceFromTitle(item.title);
     const snippet = stripHtml(item.description).slice(0, 160);
+    const originCat = item.originKey ? CATEGORIES[item.originKey] : null;
     return `
       <a class="card" href="${item.link}" target="_blank" rel="noopener noreferrer">
         <div class="meta">
           <span>${source || "source"}</span>
+          ${originCat ? `<span class="origin" style="color:${originCat.color}">${originCat.emoji} ${originCat.label}</span>` : ""}
           <span>${timeAgo(item.pubDate)}</span>
         </div>
         <p class="headline">${headline}</p>
@@ -501,20 +500,15 @@ function renderColumn(key) {
 
 function renderTicker() {
   const track = document.getElementById("tickerTrack");
-  const all = [
-    ...ALL_ITEMS.west.slice(0, 6).map(i => ({ ...i, tag: "WEST", color: "var(--blue)" })),
-    ...ALL_ITEMS.huawei.slice(0, 6).map(i => ({ ...i, tag: "HUAWEI", color: "var(--amber)" })),
-    ...ALL_ITEMS.china.slice(0, 6).map(i => ({ ...i, tag: "CHINA", color: "var(--red)" })),
-  ].sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-
-  if (!all.length) {
-    track.innerHTML = `<span class="ticker-item">No live signals yet — check your connection or wait for next refresh.</span>`;
+  const hot = getHotItems().slice(0, 14);
+  if (!hot.length) {
+    track.innerHTML = `<span class="ticker-item">No live signals yet — hit Sync, or check back shortly.</span>`;
     return;
   }
-
-  track.innerHTML = all.map(item => {
-    const { headline } = sourceFromTitle(item.title || "");
-    return `<span class="ticker-item"><span class="tag" style="color:${item.color}">${item.tag}</span><a href="${item.link}" target="_blank" rel="noopener noreferrer">${headline}</a></span>`;
+  track.innerHTML = hot.map(item => {
+    const { headline } = sourceFromTitle(item.title);
+    const cat = CATEGORIES[item.originKey];
+    return `<span class="ticker-item"><span class="tag" style="color:${cat ? cat.color : "var(--amber)"}">${cat ? cat.emoji : "🔥"}</span><a href="${item.link}" target="_blank" rel="noopener noreferrer">${headline}</a></span>`;
   }).join("");
 }
 
@@ -531,7 +525,7 @@ async function tryLoadStaticData() {
         link: item.link,
         pubDate: item.pubDate,
         description: item.description || "",
-      })).slice(0, ITEMS_PER_COLUMN);
+      })).slice(0, ITEMS_PER_TAB);
     });
     document.getElementById("dataSource").textContent = `static · ${timeAgo(data.generated_at)}`;
     return true;
@@ -545,11 +539,11 @@ async function refreshAll() {
   const usedStatic = await tryLoadStaticData();
   if (!usedStatic) {
     document.getElementById("dataSource").textContent = "live (fallback)";
-    await Promise.all(Object.keys(CATEGORIES).map(loadCategory));
+    await Promise.all(Object.keys(CATEGORIES).map(loadCategoryLive));
   }
-  Object.keys(CATEGORIES).forEach(renderColumn);
+  renderPanel();
   renderTicker();
-  document.getElementById("refreshBtn").textContent = "⟳ REFRESH NOW";
+  document.getElementById("refreshBtn").textContent = "⟳ SYNC";
   lastRefresh = Date.now();
 }
 
@@ -567,22 +561,14 @@ function tickCountdown() {
   if (remaining <= 0) refreshAll();
 }
 
-document.querySelectorAll(".chip").forEach(chip => {
-  chip.addEventListener("click", () => {
-    document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
-    chip.classList.add("active");
-    currentFilter = chip.dataset.filter;
-    Object.keys(CATEGORIES).forEach(renderColumn);
-  });
-});
-
 document.getElementById("keywordFilter").addEventListener("input", (e) => {
   currentKeyword = e.target.value;
-  Object.keys(CATEGORIES).forEach(renderColumn);
+  renderPanel();
 });
 
 document.getElementById("refreshBtn").addEventListener("click", refreshAll);
 
+renderTabBar();
 setInterval(tickClock, 1000);
 setInterval(tickCountdown, 1000);
 tickClock();
